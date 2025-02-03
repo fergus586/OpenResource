@@ -17,7 +17,7 @@ const CanvasContainer = styled.div`
 `;
 
 const Title = styled.h1`
-  position: absolute;
+  position: absolute; 
   top: 20px;
   left: 20px;
   color: #ffffff;
