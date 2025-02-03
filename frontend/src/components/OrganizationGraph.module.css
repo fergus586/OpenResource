@@ -28,20 +28,42 @@
   transform: scale(1.05);
 }
 
+/* Corporate Node */
 .org_corporate_node__x9j3p {
-  composes: org_node_label__h4k2m;
-  font-size: 24px;
-  font-weight: 700;
-  background: rgba(0, 144, 255, 0.2);
-  border: 2px solid rgba(0, 144, 255, 0.4);
-  padding: 12px 24px;
+  padding: 8px 16px;
+  background-color: rgba(0, 144, 255, 0.1);
+  border: 2px solid rgba(0, 144, 255, 0.3);
+  border-radius: 6px;
+  color: #0090FF;
+  font-size: 1.2em;
+  font-weight: bold;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
+.org_corporate_nodeHighlighted__x9j3p {
+  background-color: rgba(0, 144, 255, 0.2);
+  border-color: #0090FF;
+  box-shadow: 0 0 30px rgba(0, 144, 255, 0.3);
+}
+
+/* Division Nodes */
 .org_division_node__l2m5n {
-  composes: org_node_label__h4k2m;
-  font-size: 18px;
+  padding: 8px 14px;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 2px solid rgba(255, 107, 107, 0.3);
+  border-radius: 6px;
+  color: #FF6B6B;
+  font-size: 1.1em;
   font-weight: 600;
-  padding: 10px 20px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.org_division_nodeHighlighted__l2m5n {
+  background-color: rgba(255, 107, 107, 0.2);
+  border-color: #FF6B6B;
+  box-shadow: 0 0 25px rgba(255, 107, 107, 0.3);
 }
 
 .org_commercial_division__k7p4q {
@@ -62,51 +84,111 @@
   border: 1px solid rgba(255, 45, 85, 0.3);
 }
 
+/* Region Nodes */
 .org_region_node__w5h8c {
-  composes: org_node_label__h4k2m;
-  font-size: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 12px;
+  background-color: rgba(149, 165, 166, 0.1);
+  border: 2px solid rgba(149, 165, 166, 0.3);
+  border-radius: 4px;
+  color: #95A5A6;
+  font-size: 0.9em;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
+.org_region_nodeHighlighted__w5h8c {
+  background-color: rgba(149, 165, 166, 0.2);
+  border-color: #95A5A6;
+  box-shadow: 0 0 20px rgba(149, 165, 166, 0.3);
+}
+
+/* Program Nodes */
 .org_operation_node__j6f9d {
-  composes: org_node_label__h4k2m;
-  font-size: 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  background-color: rgba(155, 89, 182, 0.1);
+  border: 2px solid rgba(155, 89, 182, 0.3);
+  border-radius: 4px;
+  color: #9B59B6;
+  font-size: 0.9em;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
+.org_operation_nodeHighlighted__j6f9d {
+  background-color: rgba(155, 89, 182, 0.2);
+  border-color: #9B59B6;
+  box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
+}
+
+/* Customer (Airline) Nodes */
 .org_customer_node__q2n7m {
-  composes: org_node_label__h4k2m;
-  font-size: 13px;
-  background: rgba(52, 199, 89, 0.08);
-  border: 1px solid rgba(52, 199, 89, 0.2);
-  padding: 6px 10px;
+  padding: 7px 14px;
+  background-color: rgba(52, 199, 89, 0.1);
+  border: 2px solid rgba(52, 199, 89, 0.3);
+  border-radius: 5px;
+  color: #34C759;
+  font-size: 1em;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
-.org_customer_node__q2n7m:hover {
-  background: rgba(52, 199, 89, 0.15);
+.org_customer_nodeHighlighted__q2n7m {
+  background-color: rgba(52, 199, 89, 0.2);
+  border-color: #34C759;
+  box-shadow: 0 0 25px rgba(52, 199, 89, 0.3);
 }
 
+/* Aircraft Nodes */
+.org_aircraft_node__a5b6c {
+  padding: 6px 12px;
+  background-color: rgba(255, 149, 0, 0.1);
+  border: 2px solid rgba(255, 149, 0, 0.3);
+  border-radius: 4px;
+  color: #FF9500;
+  font-size: 0.85em;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.org_aircraft_nodeHighlighted__a5b6c {
+  background-color: rgba(255, 149, 0, 0.2);
+  border-color: #FF9500;
+  box-shadow: 0 0 20px rgba(255, 149, 0, 0.3);
+}
+
+/* Platform Nodes */
 .org_platform_node__s4k8p {
-  composes: org_node_label__h4k2m;
-  font-size: 13px;
-  background: rgba(88, 86, 214, 0.08);
-  border: 1px solid rgba(88, 86, 214, 0.2);
-  padding: 6px 10px;
+  padding: 6px 12px;
+  background-color: rgba(88, 86, 214, 0.1);
+  border: 2px solid rgba(88, 86, 214, 0.3);
+  border-radius: 4px;
+  color: #5856D6;
+  font-size: 0.9em;
+  white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
-.org_platform_node__s4k8p:hover {
-  background: rgba(88, 86, 214, 0.15);
+.org_platform_nodeHighlighted__s4k8p {
+  background-color: rgba(88, 86, 214, 0.2);
+  border-color: #5856D6;
+  box-shadow: 0 0 20px rgba(88, 86, 214, 0.3);
 }
 
+/* Hover effects for all nodes */
+[class*="org_"][class*="_node"]:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* Connection lines */
 .org_connection_line__e3r4t {
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
+  opacity: 0.4;
+  transition: all 0.3s ease;
 }
 
-.org_connection_line__e3r4t:hover {
+.org_connection_line__e3r4t.highlighted {
   opacity: 0.8;
+  stroke-width: 2;
 }
 
 .org_management_line__y6u8i {

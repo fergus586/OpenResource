@@ -21,76 +21,90 @@ const LEVELS = {
 const testData = {
   nodes: [
     // Corporate Level
-    { id: 0, name: 'Boeing', position: [0, 15, 0], level: LEVELS.CORPORATE },
+    { id: 0, name: 'Boeing', type: 'corporate', position: [0, 15, 0] },
     
-    // Division Level - Clear triangle formation
-    { id: 1, name: 'Boeing Commercial Airplanes', position: [-12, 12, -4], level: LEVELS.DIVISION, division: DIVISIONS.COMMERCIAL },
-    { id: 2, name: 'Boeing Defense & Space', position: [12, 12, -4], level: LEVELS.DIVISION, division: DIVISIONS.DEFENSE },
-    { id: 3, name: 'Boeing Global Services', position: [0, 12, 12], level: LEVELS.DIVISION, division: DIVISIONS.SERVICES },
+    // Division Level
+    { id: 1, name: 'Boeing Commercial Airplanes', type: 'division', division: DIVISIONS.COMMERCIAL, position: [-12, 12, -4] },
+    { id: 2, name: 'Boeing Defense & Space', type: 'division', division: DIVISIONS.DEFENSE, position: [12, 12, -4] },
+    { id: 3, name: 'Boeing Global Services', type: 'division', division: DIVISIONS.SERVICES, position: [0, 12, 12] },
+    
+    // Commercial Airlines - Left front sector
+    { id: 21, name: 'American Airlines', type: 'customer', division: DIVISIONS.COMMERCIAL, position: [-14, 6, -16] },
+    { id: 22, name: 'United Airlines', type: 'customer', division: DIVISIONS.COMMERCIAL, position: [-16, 6, -14] },
+    { id: 23, name: 'Delta Air Lines', type: 'customer', division: DIVISIONS.COMMERCIAL, position: [-18, 6, -12] },
+    { id: 24, name: 'Southwest Airlines', type: 'customer', division: DIVISIONS.COMMERCIAL, position: [-20, 6, -10] },
+    
+    // Aircraft Types for American Airlines
+    { id: 101, name: '737 MAX 8', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-14, 2, -18] },
+    { id: 102, name: '777-300ER', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-12, 2, -17] },
+    { id: 103, name: '787-8', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-10, 2, -16] },
+    { id: 104, name: '787-9', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-8, 2, -15] },
+    
+    // Aircraft Types for United Airlines
+    { id: 105, name: '737 MAX 9', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-16, 2, -12] },
+    { id: 106, name: '777-200ER', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-14, 2, -11] },
+    { id: 107, name: '787-10', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-12, 2, -10] },
+    { id: 108, name: '767-300ER', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-10, 2, -9] },
+    
+    // Aircraft Types for Delta Air Lines
+    { id: 109, name: '737-900ER', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-18, 2, -8] },
+    { id: 110, name: '757-200', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-16, 2, -7] },
+    { id: 111, name: '767-400ER', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-14, 2, -6] },
+    
+    // Aircraft Types for Southwest Airlines
+    { id: 112, name: '737-700', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-20, 2, -4] },
+    { id: 113, name: '737-800', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-18, 2, -3] },
+    { id: 114, name: '737 MAX 7', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-16, 2, -2] },
+    { id: 115, name: '737 MAX 8', type: 'aircraft', division: DIVISIONS.COMMERCIAL, position: [-14, 2, -1] },
     
     // Regions - Major hubs central but in their respective sectors
     // North America
-    { id: 4, name: 'USA', position: [0, 8, 0], level: LEVELS.REGION }, // Central hub
-    { id: 5, name: 'Canada', position: [-8, 8, -8], level: LEVELS.REGION },
+    { id: 4, name: 'USA', type: 'region', position: [0, 8, 0] }, // Central hub
+    { id: 5, name: 'Canada', type: 'region', position: [-8, 8, -8] },
     
     // Europe
-    { id: 6, name: 'UK', position: [4, 8, 0], level: LEVELS.REGION }, // Right sector hub
-    { id: 7, name: 'France', position: [12, 8, -8], level: LEVELS.REGION },
-    { id: 8, name: 'Germany', position: [16, 8, -10], level: LEVELS.REGION },
+    { id: 6, name: 'UK', type: 'region', position: [4, 8, 0] }, // Right sector hub
+    { id: 7, name: 'France', type: 'region', position: [12, 8, -8] },
+    { id: 8, name: 'Germany', type: 'region', position: [16, 8, -10] },
     
     // Asia Pacific
-    { id: 9, name: 'China', position: [-4, 8, 0], level: LEVELS.REGION }, // Left sector hub
-    { id: 10, name: 'Japan', position: [-12, 8, 8], level: LEVELS.REGION },
-    { id: 11, name: 'Australia', position: [8, 8, 8], level: LEVELS.REGION },
+    { id: 9, name: 'China', type: 'region', position: [-4, 8, 0] }, // Left sector hub
+    { id: 10, name: 'Japan', type: 'region', position: [-12, 8, 8] },
+    { id: 11, name: 'Australia', type: 'region', position: [8, 8, 8] },
     
     // Commercial Sector (Left Side) ---------------------
     // Operations - Commercial
-    { id: 12, name: '737 Program (USA)', position: [-16, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.COMMERCIAL },
-    { id: 13, name: '787 Program (USA)', position: [-18, 4, -6], level: LEVELS.OPERATION, division: DIVISIONS.COMMERCIAL },
-    { id: 14, name: 'Final Assembly (China)', position: [-20, 4, -4], level: LEVELS.OPERATION, division: DIVISIONS.COMMERCIAL },
-    
-    // USA Airlines - Left front sector
-    { id: 21, name: 'American Airlines', position: [-14, 2, -16], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    { id: 22, name: 'United Airlines', position: [-16, 2, -14], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    { id: 23, name: 'Delta Air Lines', position: [-18, 2, -12], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    { id: 24, name: 'Southwest Airlines', position: [-20, 2, -10], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    
-    // China Airlines - Left back sector
-    { id: 25, name: 'Air China', position: [-14, 2, 16], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    { id: 26, name: 'China Southern', position: [-16, 2, 14], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    { id: 27, name: 'China Eastern', position: [-18, 2, 12], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    
-    // UK Airlines - Center-left sector
-    { id: 28, name: 'British Airways', position: [-8, 2, -14], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
-    { id: 29, name: 'Virgin Atlantic', position: [-10, 2, -12], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 12, name: '737 Program (USA)', type: 'program', division: DIVISIONS.COMMERCIAL, position: [-16, 4, -8] },
+    { id: 13, name: '787 Program (USA)', type: 'program', division: DIVISIONS.COMMERCIAL, position: [-18, 4, -6] },
+    { id: 14, name: 'Final Assembly (China)', type: 'program', division: DIVISIONS.COMMERCIAL, position: [-20, 4, -4] },
     
     // Defense Sector (Right Side) ---------------------
     // Operations - Defense
-    { id: 15, name: 'F-15 Program (USA)', position: [16, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.DEFENSE },
-    { id: 16, name: 'Space Systems (USA)', position: [18, 4, -6], level: LEVELS.OPERATION, division: DIVISIONS.DEFENSE },
-    { id: 17, name: 'Defense Europe', position: [20, 4, -4], level: LEVELS.OPERATION, division: DIVISIONS.DEFENSE },
+    { id: 15, name: 'F-15 Program (USA)', type: 'program', division: DIVISIONS.DEFENSE, position: [16, 4, -8] },
+    { id: 16, name: 'Space Systems (USA)', type: 'program', division: DIVISIONS.DEFENSE, position: [18, 4, -6] },
+    { id: 17, name: 'Defense Europe', type: 'program', division: DIVISIONS.DEFENSE, position: [20, 4, -4] },
     
     // UK Defense - Right front sector
-    { id: 30, name: 'Apache AH-64', position: [14, 2, -16], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 31, name: 'Chinook', position: [16, 2, -14], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 32, name: 'C-17 Globemaster', position: [18, 2, -12], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 33, name: 'P-8 Poseidon', position: [20, 2, -10], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 30, name: 'Apache AH-64', type: 'platform', division: DIVISIONS.DEFENSE, position: [14, 2, -16] },
+    { id: 31, name: 'Chinook', type: 'platform', division: DIVISIONS.DEFENSE, position: [16, 2, -14] },
+    { id: 32, name: 'C-17 Globemaster', type: 'platform', division: DIVISIONS.DEFENSE, position: [18, 2, -12] },
+    { id: 33, name: 'P-8 Poseidon', type: 'platform', division: DIVISIONS.DEFENSE, position: [20, 2, -10] },
     
     // US Defense - Right center sector
-    { id: 34, name: 'F-15 Eagle', position: [14, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 35, name: 'F/A-18 Super Hornet', position: [16, 2, -6], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 36, name: 'KC-46 Tanker', position: [18, 2, -4], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 34, name: 'F-15 Eagle', type: 'platform', division: DIVISIONS.DEFENSE, position: [14, 2, -8] },
+    { id: 35, name: 'F/A-18 Super Hornet', type: 'platform', division: DIVISIONS.DEFENSE, position: [16, 2, -6] },
+    { id: 36, name: 'KC-46 Tanker', type: 'platform', division: DIVISIONS.DEFENSE, position: [18, 2, -4] },
     
     // Australia Defense - Right back sector
-    { id: 37, name: 'E-7A Wedgetail', position: [14, 2, 16], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 38, name: 'P-8A Poseidon', position: [16, 2, 14], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
-    { id: 39, name: 'CH-47F Chinook', position: [18, 2, 12], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 37, name: 'E-7A Wedgetail', type: 'platform', division: DIVISIONS.DEFENSE, position: [14, 2, 16] },
+    { id: 38, name: 'P-8A Poseidon', type: 'platform', division: DIVISIONS.DEFENSE, position: [16, 2, 14] },
+    { id: 39, name: 'CH-47F Chinook', type: 'platform', division: DIVISIONS.DEFENSE, position: [18, 2, 12] },
     
     // Services Sector (Back) ---------------------
     // Operations - Services (Back sector)
-    { id: 18, name: 'Parts & Distribution', position: [-4, 4, 16], level: LEVELS.OPERATION, division: DIVISIONS.SERVICES },
-    { id: 19, name: 'Training Services', position: [0, 4, 18], level: LEVELS.OPERATION, division: DIVISIONS.SERVICES },
-    { id: 20, name: 'Digital Solutions', position: [4, 4, 20], level: LEVELS.OPERATION, division: DIVISIONS.SERVICES },
+    { id: 18, name: 'Parts & Distribution', type: 'program', division: DIVISIONS.SERVICES, position: [-4, 4, 16] },
+    { id: 19, name: 'Training Services', type: 'program', division: DIVISIONS.SERVICES, position: [0, 4, 18] },
+    { id: 20, name: 'Digital Solutions', type: 'program', division: DIVISIONS.SERVICES, position: [4, 4, 20] },
   ],
   links: [
     // Corporate to Divisions
@@ -115,6 +129,12 @@ const testData = {
     { source: 3, target: 9 }, // Services -> China
     { source: 3, target: 11 }, // Services -> Australia
     
+    // Commercial Division to Airlines
+    { source: 1, target: 21 }, // Commercial -> American
+    { source: 1, target: 22 }, // Commercial -> United
+    { source: 1, target: 23 }, // Commercial -> Delta
+    { source: 1, target: 24 }, // Commercial -> Southwest
+    
     // Commercial Programs to Countries
     { source: 12, target: 4 }, // 737 -> USA
     { source: 12, target: 9 }, // 737 -> China (assembly)
@@ -130,55 +150,96 @@ const testData = {
     { source: 17, target: 7 }, // Defense Europe -> France
     { source: 17, target: 8 }, // Defense Europe -> Germany
     
-    // Platforms to Operating Countries
-    // C-17 Globemaster operators
-    { source: 32, target: 4 }, // C-17 -> USA
-    { source: 32, target: 6 }, // C-17 -> UK
-    { source: 32, target: 11 }, // C-17 -> Australia
+    // American Airlines Aircraft
+    { source: 21, target: 101 }, // American -> 737 MAX 8
+    { source: 21, target: 102 }, // American -> 777-300ER
+    { source: 21, target: 103 }, // American -> 787-8
+    { source: 21, target: 104 }, // American -> 787-9
+
+    // United Airlines Aircraft
+    { source: 22, target: 105 }, // United -> 737 MAX 9
+    { source: 22, target: 106 }, // United -> 777-200ER
+    { source: 22, target: 107 }, // United -> 787-10
+    { source: 22, target: 108 }, // United -> 767-300ER
+
+    // Delta Air Lines Aircraft
+    { source: 23, target: 109 }, // Delta -> 737-900ER
+    { source: 23, target: 110 }, // Delta -> 757-200
+    { source: 23, target: 111 }, // Delta -> 767-400ER
+
+    // Southwest Airlines Aircraft
+    { source: 24, target: 112 }, // Southwest -> 737-700
+    { source: 24, target: 113 }, // Southwest -> 737-800
+    { source: 24, target: 114 }, // Southwest -> 737 MAX 7
+    { source: 24, target: 115 }, // Southwest -> 737 MAX 8
+
+    // Cross-airline aircraft links
+    // 737 MAX 8 is used by both American and Southwest
+    { source: 24, target: 101 }, // Southwest -> 737 MAX 8 (shared with American)
     
-    // P-8 Poseidon operators
-    { source: 33, target: 4 }, // P-8 -> USA
-    { source: 33, target: 6 }, // P-8 -> UK
-    { source: 33, target: 11 }, // P-8 -> Australia
+    // 787 family cross-usage
+    { source: 22, target: 103 }, // United -> 787-8 (shared with American)
+    { source: 22, target: 104 }, // United -> 787-9 (shared with American)
+    { source: 21, target: 107 }, // American -> 787-10 (shared with United)
     
-    // Apache operators
-    { source: 30, target: 4 }, // Apache -> USA
-    { source: 30, target: 6 }, // Apache -> UK
+    // 777 family cross-usage
+    { source: 23, target: 102 }, // Delta -> 777-300ER (shared with American)
+    { source: 21, target: 106 }, // American -> 777-200ER (shared with United)
     
-    // Chinook operators
-    { source: 31, target: 4 }, // Chinook -> USA
-    { source: 31, target: 6 }, // Chinook -> UK
-    { source: 31, target: 11 }, // Chinook -> Australia
+    // 767 family cross-usage
+    { source: 23, target: 108 }, // Delta -> 767-300ER (shared with United)
     
-    // F-15 Eagle operators
-    { source: 34, target: 4 }, // F-15 -> USA
-    { source: 34, target: 6 }, // F-15 -> UK
-    
-    // F/A-18 operators
-    { source: 35, target: 4 }, // F/A-18 -> USA
-    { source: 35, target: 11 }, // F/A-18 -> Australia
-    
-    // KC-46 operators
-    { source: 36, target: 4 }, // KC-46 -> USA
-    { source: 36, target: 6 }, // KC-46 -> UK
-    
-    // E-7A Wedgetail operators
-    { source: 37, target: 11 }, // E-7A -> Australia
-    { source: 37, target: 6 }, // E-7A -> UK
-    
+    // 737 family cross-usage
+    { source: 22, target: 112 }, // United -> 737-700 (shared with Southwest)
+    { source: 21, target: 113 }, // American -> 737-800 (shared with Southwest)
+    { source: 23, target: 113 }, // Delta -> 737-800 (shared with Southwest)
+    { source: 22, target: 114 }, // United -> 737 MAX 7 (shared with Southwest)
+    { source: 21, target: 115 }, // American -> 737 MAX 8 (shared with Southwest)
+
     // Airlines to Countries
     { source: 21, target: 4 }, // American -> USA
     { source: 22, target: 4 }, // United -> USA
     { source: 23, target: 4 }, // Delta -> USA
     { source: 24, target: 4 }, // Southwest -> USA
     
-    { source: 25, target: 9 }, // Air China -> China
-    { source: 26, target: 9 }, // China Southern -> China
-    { source: 27, target: 9 }, // China Eastern -> China
-    
-    { source: 28, target: 6 }, // British Airways -> UK
-    { source: 29, target: 6 }, // Virgin Atlantic -> UK
-    
+    // Defense Division Structure
+    { source: 2, target: 15 }, // Defense -> F-15 Program
+    { source: 2, target: 16 }, // Defense -> Space Systems
+    { source: 2, target: 17 }, // Defense -> Defense Europe
+
+    // Defense Platforms
+    { source: 15, target: 34 }, // F-15 Program -> F-15 Eagle
+    { source: 15, target: 35 }, // F-15 Program -> F/A-18
+    { source: 16, target: 36 }, // Space Systems -> KC-46
+    { source: 17, target: 30 }, // Defense Europe -> Apache
+    { source: 17, target: 31 }, // Defense Europe -> Chinook
+    { source: 17, target: 32 }, // Defense Europe -> C-17
+    { source: 17, target: 33 }, // Defense Europe -> P-8
+
+    // Platforms to Countries
+    { source: 30, target: 4 }, // Apache -> USA
+    { source: 30, target: 6 }, // Apache -> UK
+    { source: 31, target: 4 }, // Chinook -> USA
+    { source: 31, target: 6 }, // Chinook -> UK
+    { source: 31, target: 11 }, // Chinook -> Australia
+    { source: 32, target: 4 }, // C-17 -> USA
+    { source: 32, target: 6 }, // C-17 -> UK
+    { source: 32, target: 11 }, // C-17 -> Australia
+    { source: 33, target: 4 }, // P-8 -> USA
+    { source: 33, target: 6 }, // P-8 -> UK
+    { source: 33, target: 11 }, // P-8 -> Australia
+    { source: 34, target: 4 }, // F-15 -> USA
+    { source: 34, target: 6 }, // F-15 -> UK
+    { source: 35, target: 4 }, // F/A-18 -> USA
+    { source: 35, target: 11 }, // F/A-18 -> Australia
+    { source: 36, target: 4 }, // KC-46 -> USA
+    { source: 36, target: 6 }, // KC-46 -> UK
+
+    // Services Division
+    { source: 3, target: 18 }, // Services -> Parts
+    { source: 3, target: 19 }, // Services -> Training
+    { source: 3, target: 20 }, // Services -> Digital
+
     // Services Operations to Countries
     { source: 18, target: 4 }, // Parts -> USA
     { source: 18, target: 6 }, // Parts -> UK
@@ -196,61 +257,53 @@ const testData = {
   ],
 };
 
-const getNodeLabelClass = (node) => {
-  const classes = [];
-  
-  switch (node.level) {
-    case LEVELS.CORPORATE:
-      classes.push(styles.org_corporate_node__x9j3p);
-      break;
-    case LEVELS.DIVISION:
-      classes.push(styles.org_division_node__l2m5n);
-      break;
-    case LEVELS.REGION:
-      classes.push(styles.org_region_node__w5h8c);
-      break;
-    case LEVELS.OPERATION:
-      classes.push(styles.org_operation_node__j6f9d);
-      break;
-    case LEVELS.CUSTOMER:
-      classes.push(styles.org_customer_node__q2n7m);
-      break;
-    case LEVELS.PLATFORM:
-      classes.push(styles.org_platform_node__s4k8p);
-      break;
+const getNodeColor = (node) => {
+  switch (node.type) {
+    case 'corporate':
+      return '#0090FF';
+    case 'division':
+      switch (node.division) {
+        case DIVISIONS.COMMERCIAL:
+          return '#FF6B6B';
+        case DIVISIONS.DEFENSE:
+          return '#4ECDC4';
+        case DIVISIONS.SERVICES:
+          return '#FFD93D';
+        default:
+          return '#888888';
+      }
+    case 'region':
+      return '#95A5A6';
+    case 'program':
+      return '#9B59B6';
+    case 'customer':
+      return '#34C759';
+    case 'aircraft':
+      return '#FF9500';
+    default:
+      return '#888888';
   }
-  
-  if (node.division) {
-    switch (node.division) {
-      case DIVISIONS.COMMERCIAL:
-        classes.push(styles.org_commercial_division__k7p4q);
-        break;
-      case DIVISIONS.DEFENSE:
-        classes.push(styles.org_defense_division__r8t6v);
-        break;
-      case DIVISIONS.SERVICES:
-        classes.push(styles.org_services_division__m3n9b);
-        break;
-    }
-  }
-  
-  return classes.join(' ');
 };
 
-const getNodeColor = (node) => {
-  switch (node.level) {
-    case LEVELS.CORPORATE:
-      return "#FFD700";
-    case LEVELS.DIVISION:
-      return "#FFA07A";
-    case LEVELS.REGION:
-      return "#DC143C";
-    case LEVELS.OPERATION:
-      return "#008000";
-    case LEVELS.CUSTOMER:
-      return "#4B0082";
-    case LEVELS.PLATFORM:
-      return "#800080";
+const getNodeClass = (node, isHighlighted = false) => {
+  const baseClass = isHighlighted ? 'Highlighted' : '';
+  switch (node.type) {
+    case 'corporate':
+      return styles[`org_corporate_node${baseClass}__x9j3p`];
+    case 'division':
+      return styles[`org_division_node${baseClass}__l2m5n`];
+    case 'region':
+      return styles[`org_region_node${baseClass}__w5h8c`];
+    case 'program':
+      return styles[`org_program_node${baseClass}__j6f9d`];
+    case 'customer':
+      return styles[`org_customer_node${baseClass}__q2n7m`];
+    case 'platform':
+      return styles[`org_platform_node${baseClass}__s4k8p`];
+    case 'aircraft':
+      return styles[`org_aircraft_node${baseClass}__a5b6c`];
+    default:
+      return styles[`org_node_label${baseClass}__h4k2m`];
   }
 };
 
@@ -300,7 +353,7 @@ export function OrganizationGraph() {
       return;
     }
 
-    // Find path to Boeing (node 0)
+    // Find paths to Boeing (node 0)
     const paths = findPathToTop(nodeId, testData.links);
     console.log(`Found paths:`, Array.from(paths));
     
@@ -325,13 +378,12 @@ export function OrganizationGraph() {
       <group key={node.id} position={node.position}>
         <Html distanceFactor={15}>
           <div 
-            className={getNodeLabelClass(node)} 
+            className={getNodeClass(node, node.id === selectedNode)} 
             onClick={(e) => handleNodeClick(e, node.id)}
             style={{ 
               cursor: 'pointer',
-              backgroundColor: node.id === selectedNode ? 'rgba(255, 215, 0, 0.2)' : undefined,
-              borderColor: node.id === selectedNode ? 'rgba(255, 215, 0, 0.4)' : undefined,
-              boxShadow: node.id === selectedNode ? '0 0 20px rgba(255, 215, 0, 0.2)' : undefined
+              transform: node.id === selectedNode ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.3s ease',
             }}
             onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
             onPointerOut={() => { document.body.style.cursor = 'auto'; }}
@@ -348,6 +400,12 @@ export function OrganizationGraph() {
     return testData.links.map((link, index) => {
       const start = testData.nodes.find(n => n.id === link.source);
       const end = testData.nodes.find(n => n.id === link.target);
+      
+      // Skip rendering if either node is missing
+      if (!start || !end) {
+        console.warn(`Missing node for link: ${link.source} -> ${link.target}`);
+        return null;
+      }
       
       // Create a curved line between nodes
       const midPoint = new THREE.Vector3(
@@ -377,7 +435,7 @@ export function OrganizationGraph() {
           opacity={isHighlighted ? 0.8 : 0.3}
         />
       );
-    });
+    }).filter(Boolean); // Remove null links
   }, [highlightedPaths]);
 
   return (
