@@ -1,216 +1,249 @@
 import React, { useMemo } from 'react';
 import { Line, Html } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import styles from './OrganizationGraph.module.css';
+
+const DIVISIONS = {
+  COMMERCIAL: 'commercial',
+  DEFENSE: 'defense',
+  SERVICES: 'services'
+};
+
+const LEVELS = {
+  CORPORATE: 'corporate',
+  DIVISION: 'division',
+  REGION: 'region',
+  OPERATION: 'operation',
+  CUSTOMER: 'customer',
+  PLATFORM: 'platform'
+};
 
 const testData = {
   nodes: [
-    // CEO at top
-    { id: 1, name: 'CEO', position: [0, 15, 0], color: '#FF6B6B' },
+    // Corporate Level
+    { id: 0, name: 'Boeing', position: [0, 15, 0], level: LEVELS.CORPORATE },
     
-    // C-Suite Level (forming a triangle)
-    { id: 2, name: 'CTO', position: [-8, 10, -6], color: '#4ECDC4' },
-    { id: 3, name: 'COO', position: [8, 10, -6], color: '#45B7D1' },
-    { id: 4, name: 'CFO', position: [0, 10, 8], color: '#96CEB4' },
+    // Division Level
+    { id: 1, name: 'Boeing Commercial Airplanes', position: [-8, 12, 0], level: LEVELS.DIVISION, division: DIVISIONS.COMMERCIAL },
+    { id: 2, name: 'Boeing Defense & Space', position: [8, 12, 0], level: LEVELS.DIVISION, division: DIVISIONS.DEFENSE },
+    { id: 3, name: 'Boeing Global Services', position: [0, 12, 8], level: LEVELS.DIVISION, division: DIVISIONS.SERVICES },
     
-    // Technology Branch (extending down-left)
-    { id: 5, name: 'Head of Engineering', position: [-12, 7, -9], color: '#4ECDC4' },
-    { id: 6, name: 'Head of Product', position: [-6, 7, -9], color: '#4ECDC4' },
-    { id: 7, name: 'Dev Team Lead', position: [-14, 4, -12], color: '#4ECDC4' },
-    { id: 8, name: 'QA Lead', position: [-10, 4, -12], color: '#4ECDC4' },
-    { id: 9, name: 'Product Manager', position: [-6, 4, -12], color: '#4ECDC4' },
-    { id: 10, name: 'Senior Developer', position: [-14, 1, -15], color: '#4ECDC4' },
-    { id: 11, name: 'Junior Developer', position: [-10, 1, -15], color: '#4ECDC4' },
+    // Regions - North America
+    { id: 4, name: 'USA', position: [-12, 8, -6], level: LEVELS.REGION },
+    { id: 5, name: 'Canada', position: [-8, 8, -6], level: LEVELS.REGION },
     
-    // Operations Branch (extending down-right)
-    { id: 12, name: 'Supply Chain Director', position: [12, 7, -9], color: '#45B7D1' },
-    { id: 13, name: 'Operations Manager', position: [6, 7, -9], color: '#45B7D1' },
-    { id: 14, name: 'Logistics Lead', position: [14, 4, -12], color: '#45B7D1' },
-    { id: 15, name: 'Warehouse Manager', position: [10, 4, -12], color: '#45B7D1' },
-    { id: 16, name: 'Quality Control', position: [6, 4, -12], color: '#45B7D1' },
-    { id: 17, name: 'Logistics Coordinator', position: [14, 1, -15], color: '#45B7D1' },
-    { id: 18, name: 'Warehouse Staff', position: [10, 1, -15], color: '#45B7D1' },
+    // Regions - Europe
+    { id: 6, name: 'UK', position: [0, 8, -6], level: LEVELS.REGION },
+    { id: 7, name: 'France', position: [4, 8, -6], level: LEVELS.REGION },
+    { id: 8, name: 'Germany', position: [8, 8, -6], level: LEVELS.REGION },
     
-    // Finance Branch (extending down-back)
-    { id: 19, name: 'Controller', position: [-3, 7, 12], color: '#96CEB4' },
-    { id: 20, name: 'Head of Accounting', position: [3, 7, 12], color: '#96CEB4' },
-    { id: 21, name: 'Financial Analyst', position: [-4, 4, 15], color: '#96CEB4' },
-    { id: 22, name: 'Senior Accountant', position: [0, 4, 15], color: '#96CEB4' },
-    { id: 23, name: 'Budget Manager', position: [4, 4, 15], color: '#96CEB4' },
-    { id: 24, name: 'Junior Analyst', position: [-2, 1, 18], color: '#96CEB4' },
-    { id: 25, name: 'Junior Accountant', position: [2, 1, 18], color: '#96CEB4' },
+    // Regions - Asia Pacific
+    { id: 9, name: 'China', position: [-4, 8, 12], level: LEVELS.REGION },
+    { id: 10, name: 'Japan', position: [0, 8, 12], level: LEVELS.REGION },
+    { id: 11, name: 'Australia', position: [4, 8, 12], level: LEVELS.REGION },
+    
+    // Operations - Commercial
+    { id: 12, name: '737 Program (USA)', position: [-14, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.COMMERCIAL },
+    { id: 13, name: '787 Program (USA)', position: [-10, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.COMMERCIAL },
+    { id: 14, name: 'Final Assembly (China)', position: [-6, 4, 14], level: LEVELS.OPERATION, division: DIVISIONS.COMMERCIAL },
+    
+    // Operations - Defense
+    { id: 15, name: 'F-15 Program (USA)', position: [10, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.DEFENSE },
+    { id: 16, name: 'Space Systems (USA)', position: [14, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.DEFENSE },
+    { id: 17, name: 'Defense Europe', position: [6, 4, -8], level: LEVELS.OPERATION, division: DIVISIONS.DEFENSE },
+    
+    // Operations - Services
+    { id: 18, name: 'Parts & Distribution', position: [-2, 4, 14], level: LEVELS.OPERATION, division: DIVISIONS.SERVICES },
+    { id: 19, name: 'Training Services', position: [2, 4, 14], level: LEVELS.OPERATION, division: DIVISIONS.SERVICES },
+    { id: 20, name: 'Digital Solutions', position: [6, 4, 14], level: LEVELS.OPERATION, division: DIVISIONS.SERVICES },
+    
+    // Commercial Airlines by Country
+    // USA Airlines
+    { id: 21, name: 'American Airlines', position: [-14, 2, -8], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 22, name: 'United Airlines', position: [-12, 2, -8], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 23, name: 'Delta Air Lines', position: [-10, 2, -8], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 24, name: 'Southwest Airlines', position: [-8, 2, -8], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    
+    // China Airlines
+    { id: 25, name: 'Air China', position: [-6, 2, 14], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 26, name: 'China Southern', position: [-4, 2, 14], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 27, name: 'China Eastern', position: [-2, 2, 14], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    
+    // UK Airlines
+    { id: 28, name: 'British Airways', position: [-2, 2, -8], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    { id: 29, name: 'Virgin Atlantic', position: [0, 2, -8], level: LEVELS.CUSTOMER, division: DIVISIONS.COMMERCIAL },
+    
+    // Defense Platforms by Country
+    // UK Defense
+    { id: 30, name: 'Apache AH-64', position: [2, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 31, name: 'Chinook', position: [4, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 32, name: 'C-17 Globemaster', position: [6, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 33, name: 'P-8 Poseidon', position: [8, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    
+    // US Defense
+    { id: 34, name: 'F-15 Eagle', position: [10, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 35, name: 'F/A-18 Super Hornet', position: [12, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 36, name: 'KC-46 Tanker', position: [14, 2, -8], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    
+    // Australia Defense
+    { id: 37, name: 'E-7A Wedgetail', position: [2, 2, 14], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 38, name: 'P-8A Poseidon', position: [4, 2, 14], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
+    { id: 39, name: 'CH-47F Chinook', position: [6, 2, 14], level: LEVELS.PLATFORM, division: DIVISIONS.DEFENSE },
   ],
   links: [
-    // CEO to C-Suite
-    { source: 1, target: 2, type: 'manages' },
-    { source: 1, target: 3, type: 'manages' },
-    { source: 1, target: 4, type: 'manages' },
+    // Corporate to Divisions
+    { source: 0, target: 1, type: 'division' },
+    { source: 0, target: 2, type: 'division' },
+    { source: 0, target: 3, type: 'division' },
     
-    // CTO Branch
-    { source: 2, target: 5, type: 'manages' },
-    { source: 2, target: 6, type: 'manages' },
-    { source: 5, target: 7, type: 'manages' },
-    { source: 5, target: 8, type: 'manages' },
-    { source: 6, target: 9, type: 'manages' },
-    { source: 7, target: 10, type: 'manages' },
-    { source: 8, target: 11, type: 'manages' },
+    // Commercial Links
+    { source: 1, target: 4, type: 'region' }, // USA
+    { source: 1, target: 9, type: 'region' }, // China
     
-    // COO Branch
-    { source: 3, target: 12, type: 'manages' },
-    { source: 3, target: 13, type: 'manages' },
-    { source: 12, target: 14, type: 'manages' },
-    { source: 12, target: 15, type: 'manages' },
-    { source: 13, target: 16, type: 'manages' },
-    { source: 14, target: 17, type: 'manages' },
-    { source: 15, target: 18, type: 'manages' },
+    // Defense Links
+    { source: 2, target: 4, type: 'region' }, // USA
+    { source: 2, target: 6, type: 'region' }, // UK
+    { source: 2, target: 7, type: 'region' }, // France
+    { source: 2, target: 8, type: 'region' }, // Germany
     
-    // CFO Branch
-    { source: 4, target: 19, type: 'manages' },
-    { source: 4, target: 20, type: 'manages' },
-    { source: 19, target: 21, type: 'manages' },
-    { source: 19, target: 22, type: 'manages' },
-    { source: 20, target: 23, type: 'manages' },
-    { source: 21, target: 24, type: 'manages' },
-    { source: 22, target: 25, type: 'manages' },
+    // Services Links
+    { source: 3, target: 4, type: 'region' }, // USA
+    { source: 3, target: 9, type: 'region' }, // China
+    { source: 3, target: 10, type: 'region' }, // Japan
+    { source: 3, target: 11, type: 'region' }, // Australia
     
-    // Cross-department collaborations
-    { source: 7, target: 14, type: 'collaborates' },  // Dev Lead to Logistics
-    { source: 21, target: 16, type: 'collaborates' }, // Financial Analyst to Quality Control
-    { source: 9, target: 23, type: 'collaborates' },  // Product Manager to Budget Manager
+    // USA Airlines
+    { source: 4, target: 21, type: 'customer' }, // American
+    { source: 4, target: 22, type: 'customer' }, // United
+    { source: 4, target: 23, type: 'customer' }, // Delta
+    { source: 4, target: 24, type: 'customer' }, // Southwest
+    
+    // China Airlines
+    { source: 9, target: 25, type: 'customer' }, // Air China
+    { source: 9, target: 26, type: 'customer' }, // China Southern
+    { source: 9, target: 27, type: 'customer' }, // China Eastern
+    
+    // UK Airlines
+    { source: 6, target: 28, type: 'customer' }, // British Airways
+    { source: 6, target: 29, type: 'customer' }, // Virgin Atlantic
+    
+    // Defense Platforms
+    // UK Platforms
+    { source: 6, target: 30, type: 'platform' }, // Apache
+    { source: 6, target: 31, type: 'platform' }, // Chinook
+    { source: 6, target: 32, type: 'platform' }, // C-17
+    { source: 6, target: 33, type: 'platform' }, // P-8
+    
+    // US Platforms
+    { source: 4, target: 34, type: 'platform' }, // F-15
+    { source: 4, target: 35, type: 'platform' }, // F/A-18
+    { source: 4, target: 36, type: 'platform' }, // KC-46
+    
+    // Australia Platforms
+    { source: 11, target: 37, type: 'platform' }, // E-7A
+    { source: 11, target: 38, type: 'platform' }, // P-8A
+    { source: 11, target: 39, type: 'platform' }, // CH-47F
+    
+    // Cross-division collaboration
+    { source: 12, target: 18, type: 'collaborate' }, // 737 - Parts
+    { source: 13, target: 18, type: 'collaborate' }, // 787 - Parts
+    { source: 14, target: 19, type: 'collaborate' }, // F-15 - Training
+    { source: 17, target: 20, type: 'collaborate' }  // Defense Europe - Digital
   ]
 };
 
-function PersonNode({ position, color, name }) {
-  const [hover, setHover] = React.useState(false);
-
-  return (
-    <group position={position}>
-      <mesh
-        onPointerOver={() => setHover(true)}
-        onPointerOut={() => setHover(false)}
-        scale={hover ? 1.2 : 1}
-      >
-        <sphereGeometry args={[0.5, 32, 32]} />
-        <meshStandardMaterial 
-          color={hover ? '#ffffff' : color}
-          roughness={0.5}
-          metalness={0.5}
-        />
-      </mesh>
-      <Html
-        position={[0, 0.8, 0]}
-        center
-        sprite
-        transform
-        occlude
-      >
-        <div style={{ 
-          background: 'rgba(0,0,0,0.8)', 
-          color: 'white', 
-          padding: '4px 8px', 
-          borderRadius: '4px',
-          fontSize: '12px',
-          whiteSpace: 'nowrap',
-          userSelect: 'none'
-        }}>
-          {name}
-        </div>
-      </Html>
-    </group>
-  );
-}
-
-function ConnectionLine({ start, end, type }) {
-  const curve = useMemo(() => {
-    const startVec = new THREE.Vector3(...start);
-    const endVec = new THREE.Vector3(...end);
-    
-    // Calculate middle point with an offset based on distance
-    const midPoint = new THREE.Vector3().addVectors(startVec, endVec).multiplyScalar(0.5);
-    const distance = startVec.distanceTo(endVec);
-    
-    // Add some vertical lift and random offset to make lines more distinct
-    midPoint.y += distance * 0.2;
-    midPoint.x += (Math.random() - 0.5) * 0.5;
-    midPoint.z += (Math.random() - 0.5) * 0.5;
-    
-    // Create a smooth curve through the points
-    const curve = new THREE.CatmullRomCurve3([
-      startVec,
-      midPoint,
-      endVec
-    ]);
-    
-    return curve.getPoints(50);
-  }, [start, end]);
-
-  const colors = {
-    manages: '#FF6B6B',
-    leads: '#4ECDC4',
-    uses: '#FFE66D',
-    collaborates: '#45B7D1',
-    connects: '#96CEB4'
-  };
-
-  return (
-    <Line
-      points={curve}
-      color={colors[type] || '#666666'}
-      lineWidth={2}
-      dashed={type === 'collaborates'}
-      transparent
-      opacity={0.8}
-    />
-  );
-}
+const getNodeLabelClass = (node) => {
+  const classes = [];
+  
+  switch (node.level) {
+    case LEVELS.CORPORATE:
+      classes.push(styles.org_corporate_node__x9j3p);
+      break;
+    case LEVELS.DIVISION:
+      classes.push(styles.org_division_node__l2m5n);
+      break;
+    case LEVELS.REGION:
+      classes.push(styles.org_region_node__w5h8c);
+      break;
+    case LEVELS.OPERATION:
+      classes.push(styles.org_operation_node__j6f9d);
+      break;
+    case LEVELS.CUSTOMER:
+      classes.push(styles.org_customer_node__q2n7m);
+      break;
+    case LEVELS.PLATFORM:
+      classes.push(styles.org_platform_node__s4k8p);
+      break;
+  }
+  
+  if (node.division) {
+    switch (node.division) {
+      case DIVISIONS.COMMERCIAL:
+        classes.push(styles.org_commercial_division__k7p4q);
+        break;
+      case DIVISIONS.DEFENSE:
+        classes.push(styles.org_defense_division__r8t6v);
+        break;
+      case DIVISIONS.SERVICES:
+        classes.push(styles.org_services_division__m3n9b);
+        break;
+    }
+  }
+  
+  return classes.join(' ');
+};
 
 export function OrganizationGraph() {
-  const nodeRefs = useMemo(() => 
-    testData.nodes.reduce((acc, node) => {
-      acc[node.id] = React.createRef();
-      return acc;
-    }, {}),
+  const nodes = useMemo(() => 
+    testData.nodes.map((node) => (
+      <group key={node.id} position={node.position} className={styles.org_node__g6f5d}>
+        <Html distanceFactor={15}>
+          <div className={getNodeLabelClass(node)}>{node.name}</div>
+        </Html>
+      </group>
+    )),
     []
   );
 
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    testData.nodes.forEach((node) => {
-      if (nodeRefs[node.id].current) {
-        // Add subtle floating animation in all dimensions
-        nodeRefs[node.id].current.position.y += Math.sin(t + node.id) * 0.001;
-        nodeRefs[node.id].current.position.x += Math.sin(t * 0.8 + node.id) * 0.0005;
-        nodeRefs[node.id].current.position.z += Math.cos(t * 0.9 + node.id) * 0.0005;
-      }
-    });
-  });
+  const links = useMemo(() =>
+    testData.links.map((link, i) => {
+      const start = new THREE.Vector3(...testData.nodes[link.source].position);
+      const end = new THREE.Vector3(...testData.nodes[link.target].position);
+      
+      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      const offset = new THREE.Vector3().subVectors(end, start).cross(new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(2);
+      mid.add(offset);
+
+      const points = new THREE.CatmullRomCurve3([start, mid, end]).getPoints(50);
+      
+      const lineColor = link.type === 'division' ? '#ffffff' :
+                       link.type === 'region' ? '#88888888' :
+                       link.type === 'operation' ? '#88888888' :
+                       link.type === 'customer' ? '#88888888' :
+                       link.type === 'platform' ? '#88888888' :
+                       '#44444466'; // collaboration
+      
+      return (
+        <Line
+          key={i}
+          points={points}
+          color={lineColor}
+          lineWidth={link.type === 'division' ? 1.5 : 0.75}
+          transparent
+          opacity={link.type === 'division' ? 0.8 : 0.4}
+          className={styles.org_connection_line__e3r4t}
+        />
+      );
+    }),
+    []
+  );
 
   return (
-    <group>
-      {/* Draw connections first */}
-      {testData.links.map((link, index) => {
-        const sourceNode = testData.nodes.find(n => n.id === link.source);
-        const targetNode = testData.nodes.find(n => n.id === link.target);
-        return (
-          <ConnectionLine
-            key={`line-${index}`}
-            start={sourceNode.position}
-            end={targetNode.position}
-            type={link.type}
-          />
-        );
-      })}
-      
-      {/* Draw nodes */}
-      {testData.nodes.map((node) => (
-        <PersonNode
-          key={node.id}
-          ref={nodeRefs[node.id]}
-          position={node.position}
-          color={node.color}
-          name={node.name}
-        />
-      ))}
+    <group className={styles.org_graph_container__t7y1x}>
+      {links}
+      {nodes}
     </group>
   );
 }
+
+export default OrganizationGraph;
