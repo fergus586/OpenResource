@@ -30,6 +30,7 @@
 
 /* Base styles for all nodes */
 [class*="org_"][class*="_node"] {
+  padding: 6px 12px;
   border: 2px solid;
   border-radius: 4px;
   white-space: nowrap;
@@ -47,12 +48,6 @@
   font-weight: bold;
 }
 
-.org_corporate_nodeHighlighted__x9j3p {
-  background-color: rgba(0, 144, 255, 0.2);
-  border-color: #0090FF;
-  box-shadow: 0 0 30px rgba(0, 144, 255, 0.3);
-}
-
 /* Division Nodes */
 .org_division_node__l2m5n {
   padding: 8px 14px;
@@ -61,12 +56,6 @@
   color: #FF6B6B;
   font-size: 1.1em;
   font-weight: 600;
-}
-
-.org_division_nodeHighlighted__l2m5n {
-  background-color: rgba(255, 107, 107, 0.2);
-  border-color: #FF6B6B;
-  box-shadow: 0 0 25px rgba(255, 107, 107, 0.3);
 }
 
 .org_commercial_division__k7p4q {
@@ -89,32 +78,18 @@
 
 /* Region Nodes */
 .org_region_node__w5h8c {
-  padding: 6px 12px;
   background-color: rgba(149, 165, 166, 0.1);
   border-color: rgba(149, 165, 166, 0.3);
   color: #95A5A6;
   font-size: 0.9em;
 }
 
-.org_region_nodeHighlighted__w5h8c {
-  background-color: rgba(149, 165, 166, 0.2);
-  border-color: #95A5A6;
-  box-shadow: 0 0 20px rgba(149, 165, 166, 0.3);
-}
-
 /* Program Nodes */
 .org_operation_node__j6f9d {
-  padding: 6px 12px;
   background-color: rgba(155, 89, 182, 0.1);
   border-color: rgba(155, 89, 182, 0.3);
   color: #9B59B6;
   font-size: 0.9em;
-}
-
-.org_operation_nodeHighlighted__j6f9d {
-  background-color: rgba(155, 89, 182, 0.2);
-  border-color: #9B59B6;
-  box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
 }
 
 /* Customer (Airline) Nodes */
@@ -126,40 +101,20 @@
   font-size: 1em;
 }
 
-.org_customer_nodeHighlighted__q2n7m {
-  background-color: rgba(52, 199, 89, 0.2);
-  border-color: #34C759;
-  box-shadow: 0 0 25px rgba(52, 199, 89, 0.3);
-}
-
 /* Aircraft Nodes */
 .org_aircraft_node__a5b6c {
-  padding: 6px 12px;
   background-color: rgba(255, 149, 0, 0.1);
   border-color: rgba(255, 149, 0, 0.3);
   color: #FF9500;
   font-size: 0.85em;
 }
 
-.org_aircraft_nodeHighlighted__a5b6c {
-  background-color: rgba(255, 149, 0, 0.2);
-  border-color: #FF9500;
-  box-shadow: 0 0 20px rgba(255, 149, 0, 0.3);
-}
-
 /* Platform Nodes */
 .org_platform_node__s4k8p {
-  padding: 6px 12px;
   background-color: rgba(88, 86, 214, 0.1);
   border-color: rgba(88, 86, 214, 0.3);
   color: #5856D6;
   font-size: 0.9em;
-}
-
-.org_platform_nodeHighlighted__s4k8p {
-  background-color: rgba(88, 86, 214, 0.2);
-  border-color: #5856D6;
-  box-shadow: 0 0 20px rgba(88, 86, 214, 0.3);
 }
 
 /* Hover effects for all nodes */
@@ -170,13 +125,8 @@
 
 /* Connection lines */
 .org_connection_line__e3r4t {
-  opacity: 0.4;
+  opacity: 0.3;
   transition: all 0.3s ease;
-}
-
-.org_connection_line__e3r4t.highlighted {
-  opacity: 0.8;
-  stroke-width: 2;
 }
 
 .org_management_line__y6u8i {
