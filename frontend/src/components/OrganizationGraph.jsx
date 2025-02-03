@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Line, Html } from '@react-three/drei';
+import React, { useMemo, useState } from 'react';
+import { Line, Html, Mesh, SphereGeometry, MeshStandardMaterial } from '@react-three/drei';
 import * as THREE from 'three';
 import styles from './OrganizationGraph.module.css';
 
@@ -237,53 +237,151 @@ const getNodeLabelClass = (node) => {
   return classes.join(' ');
 };
 
+const getNodeColor = (node) => {
+  switch (node.level) {
+    case LEVELS.CORPORATE:
+      return "#FFD700";
+    case LEVELS.DIVISION:
+      return "#FFA07A";
+    case LEVELS.REGION:
+      return "#DC143C";
+    case LEVELS.OPERATION:
+      return "#008000";
+    case LEVELS.CUSTOMER:
+      return "#4B0082";
+    case LEVELS.PLATFORM:
+      return "#800080";
+  }
+};
+
+const findPathToTop = (nodeId, links) => {
+  const path = new Set();
+  const visited = new Set();
+
+  const traverse = (currentId) => {
+    if (visited.has(currentId)) return;
+    visited.add(currentId);
+
+    // Find all links connected to this node
+    const connectedLinks = links.filter(link => 
+      link.source === currentId || link.target === currentId
+    );
+
+    for (const link of connectedLinks) {
+      // Get the next node (the one we're not currently on)
+      const nextNode = link.source === currentId ? link.target : link.source;
+      
+      // Only traverse upward (towards Boeing)
+      if (nextNode === 0 || nextNode < currentId) {
+        path.add(JSON.stringify(link));
+        // Continue traversing from the next node
+        traverse(nextNode);
+      }
+    }
+  };
+
+  // Start traversal from the clicked node
+  traverse(nodeId);
+  return path;
+};
+
 export function OrganizationGraph() {
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [highlightedPaths, setHighlightedPaths] = useState(new Set());
+
+  const handleNodeClick = (e, nodeId) => {
+    e.stopPropagation();
+    console.log(`Clicked node: ${nodeId}`);
+    
+    // If clicking the same node, clear selection
+    if (selectedNode === nodeId) {
+      setSelectedNode(null);
+      setHighlightedPaths(new Set());
+      return;
+    }
+
+    // Find path to Boeing (node 0)
+    const paths = findPathToTop(nodeId, testData.links);
+    console.log(`Found paths:`, Array.from(paths));
+    
+    setSelectedNode(nodeId);
+    setHighlightedPaths(paths);
+  };
+
+  const handleBackgroundClick = () => {
+    setSelectedNode(null);
+    setHighlightedPaths(new Set());
+  };
+
+  const isLinkHighlighted = (link) => {
+    const linkStr = JSON.stringify(link);
+    const isHighlit = highlightedPaths.has(linkStr);
+    console.log(`Link ${link.source}->${link.target} highlighted: ${isHighlit}`);
+    return isHighlit;
+  };
+
   const nodes = useMemo(() => 
     testData.nodes.map((node) => (
-      <group key={node.id} position={node.position} className={styles.org_node__g6f5d}>
+      <group key={node.id} position={node.position}>
         <Html distanceFactor={15}>
-          <div className={getNodeLabelClass(node)}>{node.name}</div>
+          <div 
+            className={getNodeLabelClass(node)} 
+            onClick={(e) => handleNodeClick(e, node.id)}
+            style={{ 
+              cursor: 'pointer',
+              backgroundColor: node.id === selectedNode ? 'rgba(255, 215, 0, 0.2)' : undefined,
+              borderColor: node.id === selectedNode ? 'rgba(255, 215, 0, 0.4)' : undefined,
+              boxShadow: node.id === selectedNode ? '0 0 20px rgba(255, 215, 0, 0.2)' : undefined
+            }}
+            onPointerOver={() => { document.body.style.cursor = 'pointer'; }}
+            onPointerOut={() => { document.body.style.cursor = 'auto'; }}
+          >
+            {node.name}
+          </div>
         </Html>
       </group>
     )),
-    []
+    [selectedNode]
   );
 
-  const links = useMemo(() =>
-    testData.links.map((link, i) => {
-      const start = new THREE.Vector3(...testData.nodes[link.source].position);
-      const end = new THREE.Vector3(...testData.nodes[link.target].position);
+  const links = useMemo(() => {
+    return testData.links.map((link, index) => {
+      const start = testData.nodes.find(n => n.id === link.source);
+      const end = testData.nodes.find(n => n.id === link.target);
       
-      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-      const offset = new THREE.Vector3().subVectors(end, start).cross(new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(2);
-      mid.add(offset);
+      // Create a curved line between nodes
+      const midPoint = new THREE.Vector3(
+        (start.position[0] + end.position[0]) / 2,
+        (start.position[1] + end.position[1]) / 2,
+        (start.position[2] + end.position[2]) / 2
+      );
+      
+      // Add a slight curve by moving the midpoint up
+      midPoint.y += 2;
 
-      const points = new THREE.CatmullRomCurve3([start, mid, end]).getPoints(50);
-      
-      const lineColor = link.type === 'division' ? '#ffffff' :
-                       link.type === 'region' ? '#88888888' :
-                       link.type === 'operation' ? '#88888888' :
-                       link.type === 'customer' ? '#88888888' :
-                       link.type === 'platform' ? '#88888888' :
-                       '#44444466'; // collaboration
+      const points = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(...start.position),
+        midPoint,
+        new THREE.Vector3(...end.position)
+      ]).getPoints(50);
+
+      const isHighlighted = isLinkHighlighted(link);
       
       return (
         <Line
-          key={i}
+          key={index}
           points={points}
-          color={lineColor}
-          lineWidth={link.type === 'division' ? 1.5 : 0.75}
+          color={isHighlighted ? "#FFD700" : "#44444466"}
+          lineWidth={isHighlighted ? 2 : 1}
           transparent
-          opacity={link.type === 'division' ? 0.8 : 0.4}
-          className={styles.org_connection_line__e3r4t}
+          opacity={isHighlighted ? 0.8 : 0.3}
         />
       );
-    }),
-    []
-  );
+    });
+  }, [highlightedPaths]);
 
   return (
-    <group className={styles.org_graph_container__t7y1x}>
+    <group onClick={handleBackgroundClick}>
       {links}
       {nodes}
     </group>
