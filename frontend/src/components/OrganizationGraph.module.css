@@ -28,17 +28,23 @@
   transform: scale(1.05);
 }
 
+/* Base styles for all nodes */
+[class*="org_"][class*="_node"] {
+  border: 2px solid;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 /* Corporate Node */
 .org_corporate_node__x9j3p {
   padding: 8px 16px;
   background-color: rgba(0, 144, 255, 0.1);
-  border: 2px solid rgba(0, 144, 255, 0.3);
-  border-radius: 6px;
+  border-color: rgba(0, 144, 255, 0.3);
   color: #0090FF;
   font-size: 1.2em;
   font-weight: bold;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_corporate_nodeHighlighted__x9j3p {
@@ -51,13 +57,10 @@
 .org_division_node__l2m5n {
   padding: 8px 14px;
   background-color: rgba(255, 107, 107, 0.1);
-  border: 2px solid rgba(255, 107, 107, 0.3);
-  border-radius: 6px;
+  border-color: rgba(255, 107, 107, 0.3);
   color: #FF6B6B;
   font-size: 1.1em;
   font-weight: 600;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_division_nodeHighlighted__l2m5n {
@@ -88,12 +91,9 @@
 .org_region_node__w5h8c {
   padding: 6px 12px;
   background-color: rgba(149, 165, 166, 0.1);
-  border: 2px solid rgba(149, 165, 166, 0.3);
-  border-radius: 4px;
+  border-color: rgba(149, 165, 166, 0.3);
   color: #95A5A6;
   font-size: 0.9em;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_region_nodeHighlighted__w5h8c {
@@ -106,12 +106,9 @@
 .org_operation_node__j6f9d {
   padding: 6px 12px;
   background-color: rgba(155, 89, 182, 0.1);
-  border: 2px solid rgba(155, 89, 182, 0.3);
-  border-radius: 4px;
+  border-color: rgba(155, 89, 182, 0.3);
   color: #9B59B6;
   font-size: 0.9em;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_operation_nodeHighlighted__j6f9d {
@@ -124,12 +121,9 @@
 .org_customer_node__q2n7m {
   padding: 7px 14px;
   background-color: rgba(52, 199, 89, 0.1);
-  border: 2px solid rgba(52, 199, 89, 0.3);
-  border-radius: 5px;
+  border-color: rgba(52, 199, 89, 0.3);
   color: #34C759;
   font-size: 1em;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_customer_nodeHighlighted__q2n7m {
@@ -142,12 +136,9 @@
 .org_aircraft_node__a5b6c {
   padding: 6px 12px;
   background-color: rgba(255, 149, 0, 0.1);
-  border: 2px solid rgba(255, 149, 0, 0.3);
-  border-radius: 4px;
+  border-color: rgba(255, 149, 0, 0.3);
   color: #FF9500;
   font-size: 0.85em;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_aircraft_nodeHighlighted__a5b6c {
@@ -160,12 +151,9 @@
 .org_platform_node__s4k8p {
   padding: 6px 12px;
   background-color: rgba(88, 86, 214, 0.1);
-  border: 2px solid rgba(88, 86, 214, 0.3);
-  border-radius: 4px;
+  border-color: rgba(88, 86, 214, 0.3);
   color: #5856D6;
   font-size: 0.9em;
-  white-space: nowrap;
-  transition: all 0.3s ease;
 }
 
 .org_platform_nodeHighlighted__s4k8p {

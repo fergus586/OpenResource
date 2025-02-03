@@ -285,33 +285,33 @@ const getNodeColor = (node) => {
   }
 };
 
-const getNodeClass = (node, isHighlighted = false) => {
-  const baseClass = isHighlighted ? 'Highlighted' : '';
+const getNodeClass = (node) => {
   switch (node.type) {
     case 'corporate':
-      return styles[`org_corporate_node${baseClass}__x9j3p`];
+      return styles.org_corporate_node__x9j3p;
     case 'division':
-      return styles[`org_division_node${baseClass}__l2m5n`];
+      return styles.org_division_node__l2m5n;
     case 'region':
-      return styles[`org_region_node${baseClass}__w5h8c`];
+      return styles.org_region_node__w5h8c;
     case 'program':
-      return styles[`org_program_node${baseClass}__j6f9d`];
+      return styles.org_program_node__j6f9d;
     case 'customer':
-      return styles[`org_customer_node${baseClass}__q2n7m`];
+      return styles.org_customer_node__q2n7m;
     case 'platform':
-      return styles[`org_platform_node${baseClass}__s4k8p`];
+      return styles.org_platform_node__s4k8p;
     case 'aircraft':
-      return styles[`org_aircraft_node${baseClass}__a5b6c`];
+      return styles.org_aircraft_node__a5b6c;
     default:
-      return styles[`org_node_label${baseClass}__h4k2m`];
+      return styles.org_node_label__h4k2m;
   }
 };
 
-const findPathToTop = (nodeId, links) => {
-  const path = new Set();
+const findAllConnectedPaths = (nodeId, links) => {
+  const upstreamPaths = new Set();
+  const downstreamPaths = new Set();
   const visited = new Set();
 
-  const traverse = (currentId) => {
+  const traverse = (currentId, goingUp = true) => {
     if (visited.has(currentId)) return;
     visited.add(currentId);
 
@@ -321,26 +321,39 @@ const findPathToTop = (nodeId, links) => {
     );
 
     for (const link of connectedLinks) {
-      // Get the next node (the one we're not currently on)
       const nextNode = link.source === currentId ? link.target : link.source;
+      const linkStr = JSON.stringify(link);
       
-      // Only traverse upward (towards Boeing)
-      if (nextNode === 0 || nextNode < currentId) {
-        path.add(JSON.stringify(link));
-        // Continue traversing from the next node
-        traverse(nextNode);
+      if (goingUp) {
+        // Going up towards Boeing
+        if (nextNode === 0 || nextNode < currentId) {
+          upstreamPaths.add(linkStr);
+          traverse(nextNode, true);
+        }
+      } else {
+        // Going down - follow all connections
+        if (!visited.has(nextNode)) {
+          downstreamPaths.add(linkStr);
+          traverse(nextNode, false);
+        }
       }
     }
   };
 
-  // Start traversal from the clicked node
-  traverse(nodeId);
-  return path;
+  // First go up to Boeing
+  traverse(nodeId, true);
+  
+  // Then from the selected node, go down
+  visited.clear();
+  traverse(nodeId, false);
+
+  return { upstreamPaths, downstreamPaths };
 };
 
 export function OrganizationGraph() {
   const [selectedNode, setSelectedNode] = useState(null);
-  const [highlightedPaths, setHighlightedPaths] = useState(new Set());
+  const [upstreamPaths, setUpstreamPaths] = useState(new Set());
+  const [downstreamPaths, setDownstreamPaths] = useState(new Set());
 
   const handleNodeClick = (e, nodeId) => {
     e.stopPropagation();
@@ -349,28 +362,38 @@ export function OrganizationGraph() {
     // If clicking the same node, clear selection
     if (selectedNode === nodeId) {
       setSelectedNode(null);
-      setHighlightedPaths(new Set());
+      setUpstreamPaths(new Set());
+      setDownstreamPaths(new Set());
       return;
     }
 
-    // Find paths to Boeing (node 0)
-    const paths = findPathToTop(nodeId, testData.links);
-    console.log(`Found paths:`, Array.from(paths));
+    // Find all connected paths
+    const { upstreamPaths, downstreamPaths } = findAllConnectedPaths(nodeId, testData.links);
+    console.log(`Upstream paths:`, Array.from(upstreamPaths));
+    console.log(`Downstream paths:`, Array.from(downstreamPaths));
     
     setSelectedNode(nodeId);
-    setHighlightedPaths(paths);
+    setUpstreamPaths(upstreamPaths);
+    setDownstreamPaths(downstreamPaths);
   };
 
-  const handleBackgroundClick = () => {
+  const handleBackgroundClick = (e) => {
+    e.stopPropagation();
     setSelectedNode(null);
-    setHighlightedPaths(new Set());
+    setUpstreamPaths(new Set());
+    setDownstreamPaths(new Set());
+  };
+
+  const getLinkColor = (link) => {
+    const linkStr = JSON.stringify(link);
+    if (upstreamPaths.has(linkStr)) return "#FFD700"; // Gold for upstream
+    if (downstreamPaths.has(linkStr)) return "#00CED1"; // Turquoise for downstream
+    return "#44444466"; // Default gray
   };
 
   const isLinkHighlighted = (link) => {
     const linkStr = JSON.stringify(link);
-    const isHighlit = highlightedPaths.has(linkStr);
-    console.log(`Link ${link.source}->${link.target} highlighted: ${isHighlit}`);
-    return isHighlit;
+    return upstreamPaths.has(linkStr) || downstreamPaths.has(linkStr);
   };
 
   const nodes = useMemo(() => 
@@ -378,7 +401,7 @@ export function OrganizationGraph() {
       <group key={node.id} position={node.position}>
         <Html distanceFactor={15}>
           <div 
-            className={getNodeClass(node, node.id === selectedNode)} 
+            className={getNodeClass(node)} 
             onClick={(e) => handleNodeClick(e, node.id)}
             style={{ 
               cursor: 'pointer',
@@ -401,20 +424,17 @@ export function OrganizationGraph() {
       const start = testData.nodes.find(n => n.id === link.source);
       const end = testData.nodes.find(n => n.id === link.target);
       
-      // Skip rendering if either node is missing
       if (!start || !end) {
         console.warn(`Missing node for link: ${link.source} -> ${link.target}`);
         return null;
       }
       
-      // Create a curved line between nodes
       const midPoint = new THREE.Vector3(
         (start.position[0] + end.position[0]) / 2,
         (start.position[1] + end.position[1]) / 2,
         (start.position[2] + end.position[2]) / 2
       );
       
-      // Add a slight curve by moving the midpoint up
       midPoint.y += 2;
 
       const points = new THREE.CatmullRomCurve3([
@@ -423,20 +443,20 @@ export function OrganizationGraph() {
         new THREE.Vector3(...end.position)
       ]).getPoints(50);
 
-      const isHighlighted = isLinkHighlighted(link);
+      const highlighted = isLinkHighlighted(link);
       
       return (
         <Line
           key={index}
           points={points}
-          color={isHighlighted ? "#FFD700" : "#44444466"}
-          lineWidth={isHighlighted ? 2 : 1}
+          color={getLinkColor(link)}
+          lineWidth={highlighted ? 2 : 1}
           transparent
-          opacity={isHighlighted ? 0.8 : 0.3}
+          opacity={highlighted ? 0.8 : 0.3}
         />
       );
-    }).filter(Boolean); // Remove null links
-  }, [highlightedPaths]);
+    }).filter(Boolean);
+  }, [upstreamPaths, downstreamPaths]);
 
   return (
     <group onClick={handleBackgroundClick}>
